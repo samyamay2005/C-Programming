@@ -161,6 +161,7 @@ int main() {
         printf("2. Insert at Start\n");
         printf("3. Insert at End\n");
         printf("4. Insert at Position\n");
+        printf("5. Delete First Repeated Element\n");
         printf("6. Display Linked List\n");
         printf("7. Delete from Start\n");
         printf("8. Delete from End\n");
