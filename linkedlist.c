@@ -8,87 +8,73 @@ typedef struct node {
 
 node* head = NULL;
 
-node* create(int data) {
-    node *newNode = (node *)malloc(sizeof(node));
-    if (!newNode) {
-        printf("Memory allocation failed!\n");
-        exit(1);
-    }
+node* create_node(int data) {
+    node *newNode = (node*)malloc(sizeof(node));
     newNode->data = data;
     newNode->link = NULL;
     return newNode;
 }
 
-void display(node *head) {
-    if (head == NULL) {
-        printf("List is empty!\n");
-        return;
+void create_linkedlist() {
+    head = NULL;
+    node *temp = NULL;
+    int data;
+    char choice;
+    printf("Enter elements (press 'n' to stop):\n");
+    while (1) {
+        if (scanf("%d", &data) != 1) {
+            while (getchar() != '\n');
+            break;
+        }
+        node *newNode = create_node(data);
+        if (head == NULL) {
+            head = newNode;
+            temp = head;
+        } else {
+            temp->link = newNode;
+            temp = temp->link;
+        }
     }
-    node *temp = head;
-    while (temp != NULL) {
-        printf("%d \n ", temp->data);
-        temp = temp->link;
-    }
-    printf("NULL\n");
 }
 
-node* insert_at_start(node *head, int data) {
-    node *newNode = create(data);
+void insert_at_beginning(int data) {
+    node *newNode = create_node(data);
     newNode->link = head;
-    return newNode;
+    head = newNode;
 }
 
-node* insert_at_end(node *head, int data) {
-    node *newNode = create(data);
-    if (head == NULL) {
-        return newNode;
-    }
-    node *temp = head;
-    while (temp->link != NULL) {
-        temp = temp->link;
-    }
-    temp->link = newNode;
-    return head;
-}
-
-node* insert_at_position(node *head, int data, int position) {
-    node *newNode = create(data);
+void insert_at_position(int data, int position) {
+    node *newNode = create_node(data);
     if (position == 1) {
         newNode->link = head;
-        return newNode;
+        head = newNode;
+        return;
     }
     node *temp = head;
     for (int i = 1; i < position - 1 && temp != NULL; i++) {
         temp = temp->link;
     }
     if (temp == NULL) {
-        printf("Position out of range!\n");
         free(newNode);
-        return head;
+        return;
     }
     newNode->link = temp->link;
     temp->link = newNode;
-    return head;
 }
-node* delete_from_start(node *head) {
-    if (head == NULL) {
-        printf("List is empty!\n");
-        return head;
-    }
+
+void delete_from_beginning() {
+    if (head == NULL) return;
     node *temp = head;
     head = head->link;
     free(temp);
-    return head;
 }
 
-node* delete_from_end(node *head) {
-    if (head == NULL) {
-        printf("List is empty!\n");
-        return head;
-    }
+void delete_from_end() {
+    if (head == NULL) return;
     if (head->link == NULL) {
         free(head);
-        return NULL;
+        head = NULL;
+        return;
     }
     node *temp = head;
     while (temp->link->link != NULL) {
@@ -96,139 +82,72 @@ node* delete_from_end(node *head) {
     }
     free(temp->link);
     temp->link = NULL;
-    return head;
 }
 
-node* delete_from_position(node *head, int position) {
-    if (head == NULL) {
-        printf("List is empty!\n");
-        return head;
-    }
+void delete_from_position(int position) {
+    if (head == NULL) return;
     if (position == 1) {
         node *temp = head;
         head = head->link;
         free(temp);
-        return head;
+        return;
     }
-    node *temp = head;
-    for (int i = 1; i < position - 1 && temp != NULL; i++) {
-        temp = temp->link;
-    }
-    if (temp == NULL || temp->link == NULL) {
-        printf("Position out of range!\n");
-        return head;
-    }
-    node *temp2 = temp->link;
-    temp->link = temp2->link;
-    free(temp2);
-    return head;
-}
-node* delete_first_repeated_element(node *head) {
-    if (head == NULL || head->link == NULL) return head;
-
     node *temp = head, *prev = NULL;
-    while (temp != NULL && temp->link != NULL) {
-        node *runner = temp->link, *runnerPrev = temp;
-        while (runner != NULL) {
-            if (temp->data == runner->data) {
-                runnerPrev->link = runner->link;
-                free(runner);
-                return head;
-            }
-            runnerPrev = runner;
-            runner = runner->link;
-        }
+    for (int i = 1; i < position && temp != NULL; i++) {
+        prev = temp;
         temp = temp->link;
     }
-    return head;
+    if (temp == NULL) return;
+    prev->link = temp->link;
+    free(temp);
 }
 
-void free_list(node* head) {
-    node *temp;
-    while (head != NULL) {
-        temp = head;
-        head = head->link;
-        free(temp);
+void display() {
+    node *temp = head;
+    while (temp != NULL) {
+        printf("%d", temp->data);
+        if (temp->link != NULL) printf(" -> ");
+        temp = temp->link;
     }
+    printf("\n");
 }
 
 int main() {
-    int choice, element, position, n;
-
+    int choice, data, position;
     do {
-        printf("\nEnter choice:\n");
-        printf("1. Create Linked List\n");
-        printf("2. Insert at Start\n");
-        printf("3. Insert at End\n");
-        printf("4. Insert at Position\n");
-        printf("5. Delete First Repeated Element\n");
-        printf("6. Display Linked List\n");
-        printf("7. Delete from Start\n");
-        printf("8. Delete from End\n");
-        printf("9. Delete from Position\n");
-        printf("0. Exit\n");
-        printf("Your choice: ");
+        printf("\n1. Create LinkedList\n2. Insert at Beginning\n3. Insert at Position\n4. Delete from Beginning\n5. Delete from End\n6. Delete from Position\n7. Display\n0. Exit\nYour choice: ");
         scanf("%d", &choice);
 
         switch (choice) {
             case 1:
-                printf("Enter number of elements: ");
-                scanf("%d", &n);
-                head = NULL; // Reset the list
-                for (int i = 0; i < n; i++) {
-                    printf("Enter element: ");
-                    scanf("%d", &element);
-                    head = insert_at_end(head, element);
-                }
+                create_linkedlist();
                 break;
-
             case 2:
                 printf("Enter element: ");
-                scanf("%d", &element);
-                head = insert_at_start(head, element);
+                scanf("%d", &data);
+                insert_at_beginning(data);
                 break;
-
             case 3:
-                printf("Enter element: ");
-                scanf("%d", &element);
-                head = insert_at_end(head, element);
+                printf("Enter element and position: ");
+                scanf("%d %d", &data, &position);
+                insert_at_position(data, position);
                 break;
-
             case 4:
-                printf("Enter element: ");
-                scanf("%d", &element);
-                printf("Enter position: ");
-                scanf("%d", &position);
-                head = insert_at_position(head, element, position);
+                delete_from_beginning();
                 break;
-
             case 5:
-                head = delete_first_repeated_element(head);
+                delete_from_end();
                 break;
-
             case 6:
-                printf("Linked List: ");
-                display(head);
-                break;
-
-            case 7:
-                head = delete_from_start(head);
-                break;
-
-            case 8:
-                head = delete_from_end(head);
-                break;
-            
-            case 9:
                 printf("Enter position: ");
                 scanf("%d", &position);
-                head = delete_from_position(head, position);
+                delete_from_position(position);
+                break;
+            case 7:
+                display();
                 break;
             case 0:
-                printf("Exiting...\n");
-                free_list(head); 
                 break;
-
             default:
                 printf("Invalid choice!\n");
         }
