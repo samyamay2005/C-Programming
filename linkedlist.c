@@ -61,7 +61,63 @@ void insert_at_position(int data, int position) {
     newNode->link = temp->link;
     temp->link = newNode;
 }
-
+void insert_after_value(int value, int data) {
+    node *temp = head;
+    while (temp != NULL && temp->data != value) {
+        temp = temp->link;
+    }
+    if (temp == NULL) return;
+    node *newNode = create_node(data);
+    newNode->link = temp->link;
+    temp->link = newNode;
+}
+void insert_before_value(int value, int data) {
+    node *temp = head, *prev = NULL;
+    while (temp != NULL && temp->data != value) {
+        prev = temp;
+        temp = temp->link;
+    }
+    if (temp == NULL) return;
+    node *newNode = create_node(data);
+    if (prev == NULL) {
+        newNode->link = head;
+        head = newNode;
+    } else {
+        newNode->link = temp;
+        prev->link = newNode;
+    }
+}
+void delete_after_value(int value) {
+    if (head == NULL) return;
+    node *temp = head, *prev = NULL;
+    while (temp != NULL && temp->data != value) {
+        prev = temp;
+        temp = temp->link;
+    }
+    if (temp == NULL) return;
+    if (prev == NULL) {
+        head = temp->link;
+    } else {
+        prev->link = temp->link;
+    }
+    free(temp);
+}
+void delete_before_value(int value) {
+    if (head == NULL) return;
+    node *temp = head, *prev = NULL, *prev2 = NULL;
+    while (temp != NULL && temp->data != value) {
+        prev2 = prev;
+        prev = temp;
+        temp = temp->link;
+    }
+    if (temp == NULL || prev == NULL) return;
+    if (prev2 == NULL) {
+        head = temp;
+    } else {
+        prev2->link = temp;
+    }
+    free(prev);
+}
 void delete_from_beginning() {
     if (head == NULL) return;
     node *temp = head;
@@ -145,6 +201,26 @@ int main() {
                 break;
             case 7:
                 display();
+                break;
+            case 8:
+                printf("Enter element and value: ");
+                scanf("%d %d", &data, &position);
+                insert_after_value(data, position);
+                break;
+            case 9:
+                printf("Enter element and value: ");
+                scanf("%d %d", &data, &position);
+                insert_before_value(data, position);
+                break;
+            case 10:
+                printf("Enter value: ");
+                scanf("%d", &data);
+                delete_after_value(data);
+                break;
+            case 11:
+                printf("Enter value: ");
+                scanf("%d", &data);
+                delete_before_value(data);
                 break;
             case 0:
                 break;
